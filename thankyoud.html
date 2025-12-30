@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Thank You - Donation Received</title>
+  <style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 25%, #e0f7ff 50%, #ffffff 75%, #e3f2fd 100%);
+  background-size: 400% 400%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #0b3d91;
+  animation: gradientFlow 8s ease infinite, fadeIn 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: scale(0.95) translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1) translateY(0); 
+  }
+}
+
+/* Animated background elements */
+body::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    radial-gradient(circle at 30% 30%, rgba(135, 206, 235, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(30, 144, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 50% 20%, rgba(0, 191, 255, 0.12) 0%, transparent 45%);
+  animation: floatBackground 20s ease-in-out infinite;
+  z-index: 0;
+}
+
+@keyframes floatBackground {
+  0%, 100% { 
+    transform: translate(0, 0) rotate(0deg); 
+  }
+  33% { 
+    transform: translate(20px, -15px) rotate(120deg); 
+  }
+  66% { 
+    transform: translate(-15px, 20px) rotate(240deg); 
+  }
+}
+
+h1 {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #1e90ff 0%, #00bfff 25%, #87ceeb 50%, #1e90ff 75%, #00bfff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 300% auto;
+  animation: textShimmer 4s linear infinite, titleEntrance 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-shadow: 0 4px 20px rgba(30, 144, 255, 0.2);
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes textShimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes titleEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(-40px) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+h1::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #1e90ff, transparent);
+  border-radius: 2px;
+  animation: pulseLine 2s ease-in-out infinite;
+}
+
+@keyframes pulseLine {
+  0%, 100% { 
+    width: 80px; 
+    opacity: 0.6; 
+  }
+  50% { 
+    width: 120px; 
+    opacity: 1; 
+  }
+}
+
+p {
+  font-size: 1.4rem;
+  max-width: 600px;
+  margin: 20px auto;
+  line-height: 1.6;
+  color: #1e3a8a;
+  animation: textSlideUp 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.6s both;
+  position: relative;
+  z-index: 1;
+  font-weight: 500;
+}
+
+@keyframes textSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.quote {
+  margin-top: 40px;
+  font-style: italic;
+  color: #1e40af;
+  font-size: 1.2rem;
+  padding: 25px 40px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 249, 255, 0.8) 100%);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 
+    0 10px 30px rgba(30, 144, 255, 0.15),
+    0 4px 15px rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 1;
+  animation: quoteEntrance 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.9s both;
+  max-width: 500px;
+}
+
+@keyframes quoteEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) rotateX(-10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0);
+  }
+}
+
+.quote::before,
+.quote::after {
+  content: '"';
+  font-size: 3rem;
+  color: #1e90ff;
+  position: absolute;
+  opacity: 0.3;
+  animation: quoteMarks 2s ease-in-out infinite;
+}
+
+.quote::before {
+  top: 10px;
+  left: 15px;
+}
+
+.quote::after {
+  bottom: -10px;
+  right: 15px;
+}
+
+@keyframes quoteMarks {
+  0%, 100% { 
+    transform: scale(1); 
+    opacity: 0.3;
+  }
+  50% { 
+    transform: scale(1.1); 
+    opacity: 0.5;
+  }
+}
+
+button {
+  margin-top: 50px;
+  padding: 16px 40px;
+  background: linear-gradient(135deg, #1e90ff 0%, #00bfff 100%);
+  border: none;
+  color: white;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  box-shadow: 
+    0 10px 25px rgba(30, 144, 255, 0.3),
+    0 4px 10px rgba(0, 0, 0, 0.1);
+  animation: buttonEntrance 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1.2s both;
+  letter-spacing: 0.5px;
+}
+
+@keyframes buttonEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(50px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s;
+}
+
+button:hover::before {
+  left: 100%;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #1c86ee 0%, #009acd 100%);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 
+    0 15px 35px rgba(30, 144, 255, 0.4),
+    0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+button:active {
+  transform: translateY(0) scale(1);
+  box-shadow: 
+    0 8px 20px rgba(30, 144, 255, 0.3),
+    0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Floating particles animation */
+body::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.8) 2px, transparent 3px),
+    radial-gradient(circle at 80% 40%, rgba(255, 255, 255, 0.6) 1px, transparent 2px),
+    radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.7) 1.5px, transparent 2.5px);
+  background-size: 200px 200px, 150px 150px, 180px 180px;
+  animation: floatParticles 25s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes floatParticles {
+  0% { 
+    transform: translate(0, 0) rotate(0deg); 
+  }
+  100% { 
+    transform: translate(100px, -50px) rotate(360deg); 
+  }
+}
+
+/* Success checkmark animation */
+.quote::after {
+  content: '✓';
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  width: 40px;
+  height: 40px;
+  background: #1e90ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  animation: successPulse 2s ease-in-out infinite;
+  box-shadow: 0 4px 15px rgba(30, 144, 255, 0.4);
+}
+
+@keyframes successPulse {
+  0%, 100% { 
+    transform: scale(1); 
+    box-shadow: 0 4px 15px rgba(30, 144, 255, 0.4);
+  }
+  50% { 
+    transform: scale(1.1); 
+    box-shadow: 0 6px 20px rgba(30, 144, 255, 0.6);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2.8rem;
+  }
+  
+  p {
+    font-size: 1.2rem;
+    padding: 0 20px;
+  }
+  
+  .quote {
+    font-size: 1.1rem;
+    padding: 20px 30px;
+    margin: 30px 20px;
+  }
+  
+  button {
+    padding: 14px 32px;
+    font-size: 1rem;
+  }
+}
+  </style>
+</head>
+<body>
+
+  <h1>Thank You!</h1>
+  <p>Your generous contribution has been recorded successfully. You are making a real difference in someone's life.</p>
+
+  <div class="quote">"The smallest act of kindness is worth more than the grandest intention." — Oscar Wilde</div>
+
+  <button onclick="window.location.href='test.html'">Logout</button>
+
+</body>
+</html>

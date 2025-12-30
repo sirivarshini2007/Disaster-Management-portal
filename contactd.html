@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us - Disaster Management</title>
+<style>
+    /* Global Styles */
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(to bottom, #e0f7ff, #ffffff);
+        color: #333;
+    }
+
+    .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    h1, h2 {
+        text-align: center;
+        color: #1e3a8a;
+        margin-bottom: 20px;
+    }
+
+    p.description {
+        text-align: center;
+        font-size: 16px;
+        color: #555;
+        line-height: 1.6;
+        max-width: 800px;
+        margin: 0 auto 40px auto;
+    }
+
+    /* Contact Form */
+    .contact-form {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0px 8px 20px rgba(0,0,0,0.1);
+        animation: fadeIn 1s;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #1e3a8a;
+    }
+
+    .form-group input, .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+
+    .form-group input:focus, .form-group textarea:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 8px rgba(59,130,246,0.2);
+        outline: none;
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    button.submit-btn {
+        background: #1e3a8a;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: all 0.3s;
+    }
+
+    button.submit-btn:hover {
+        background: #3b82f6;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+    }
+
+    /* Contact Info */
+    .contact-info {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        margin-top: 40px;
+    }
+
+    .info-box {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        width: 280px;
+        margin: 10px;
+        text-align: center;
+        box-shadow: 0px 8px 20px rgba(0,0,0,0.05);
+        transition: all 0.3s;
+    }
+
+    .info-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 12px 25px rgba(0,0,0,0.1);
+    }
+
+    .info-box h3 {
+        color: #1e3a8a;
+        margin-bottom: 10px;
+    }
+
+    .info-box p {
+        font-size: 14px;
+        color: #555;
+        line-height: 1.5;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from {opacity:0; transform: translateY(20px);}
+        to {opacity:1; transform: translateY(0);}
+    }
+
+    /* Responsive */
+    @media(max-width: 768px){
+        .contact-info {
+            flex-direction: column;
+            align-items: center;
+        }
+        .info-box {
+            width: 90%;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Contact Us</h1>
+    <p class="description">
+        The Disaster Prediction and Relief Coordination Database is a highly scalable and intelligent system designed to transform disaster management. 
+        Reach out to us for inquiries, suggestions, or to get involved in enhancing disaster preparedness and relief coordination.
+    </p>
+
+    <!-- Contact Form -->
+    <div class="contact-form">
+        <form action="contact_submit.php" method="POST">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="subject">Subject</label>
+                <input type="text" id="subject" name="subject" placeholder="Subject of your message" required>
+            </div>
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" placeholder="Write your message here..." required></textarea>
+            </div>
+            <div style="text-align:center;">
+                <button type="submit" class="submit-btn">Send Message</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Contact Info -->
+    <div class="contact-info">
+        <div class="info-box">
+            <h3>Email</h3>
+            <p>support@disasterdb.com</p>
+        </div>
+        <div class="info-box">
+            <h3>Phone</h3>
+            <p>+91 98765 43210</p>
+        </div>
+        <div class="info-box">
+            <h3>Address</h3>
+            <p>123 Disaster Management Street,<br>Hyderabad, India</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

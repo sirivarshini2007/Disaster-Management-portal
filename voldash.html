@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Resource Donation - Disaster Management</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #f5fdff 0%, #e6f7ff 50%, #ffffff 100%);
+      color: #0d3b66;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 400px;
+      background: linear-gradient(120deg, rgba(33, 150, 243, 0.08) 0%, rgba(100, 181, 246, 0.05) 100%);
+      z-index: -1;
+    }
+
+    h1 {
+      font-size: 3rem;
+      background: linear-gradient(135deg, #1976d2 0%, #42a5f5 50%, #64b5f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 40px;
+      text-align: center;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      position: relative;
+      padding-bottom: 15px;
+      opacity: 0;
+      animation: titleReveal 1s ease-out 0.3s forwards;
+    }
+
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, #42a5f5, transparent);
+      border-radius: 2px;
+    }
+
+    .donation-container {
+      display: flex;
+      gap: 50px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      max-width: 1300px;
+      opacity: 0;
+      animation: containerReveal 1s ease-out 0.6s forwards;
+    }
+
+    /* Left section styling */
+    .left-section {
+      flex: 1 1 550px;
+      display: flex;
+      flex-direction: column;
+      gap: 35px;
+    }
+
+    .resource-counts {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      perspective: 1000px;
+    }
+
+    .resource-box {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(179, 229, 252, 0.5);
+      border-radius: 16px;
+      padding: 20px 25px;
+      box-shadow: 
+        0 8px 25px rgba(33, 150, 243, 0.12),
+        0 2px 8px rgba(33, 150, 243, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      font-size: 1.15rem;
+      font-weight: 600;
+      min-width: 140px;
+      text-align: center;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      transform: translateZ(0);
+    }
+
+    .resource-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transition: left 0.6s;
+    }
+
+    .resource-box:hover {
+      transform: translateY(-8px) scale(1.05) rotateX(5deg);
+      box-shadow: 
+        0 15px 35px rgba(33, 150, 243, 0.2),
+        0 5px 15px rgba(33, 150, 243, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      border-color: rgba(100, 181, 246, 0.8);
+    }
+
+    .resource-box:hover::before {
+      left: 100%;
+    }
+
+    .resource-box span {
+      display: inline-block;
+      background: linear-gradient(135deg, #1976d2, #42a5f5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 1.3rem;
+      margin-left: 5px;
+      transition: transform 0.3s ease;
+    }
+
+    .resource-box:hover span {
+      transform: scale(1.2);
+    }
+
+    /* Form styling */
+    form {
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      box-shadow: 
+        0 15px 40px rgba(80, 120, 220, 0.15),
+        0 5px 15px rgba(80, 120, 220, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      animation: formFloat 6s ease-in-out infinite;
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(179, 229, 252, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    form::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(179, 229, 252, 0.1) 0%, transparent 70%);
+      z-index: -1;
+    }
+
+    input, select {
+      padding: 16px 20px;
+      border-radius: 12px;
+      border: 1.5px solid #e1f5fe;
+      font-size: 1.05em;
+      outline: none;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
+    }
+
+    input:focus, select:focus {
+      border-color: #29b6f6;
+      box-shadow: 
+        0 0 0 4px rgba(41, 182, 246, 0.15),
+        inset 0 2px 4px rgba(0, 0, 0, 0.04);
+      background: rgba(255, 255, 255, 0.95);
+      transform: translateY(-2px);
+    }
+
+    button {
+      padding: 18px;
+      background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.15rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(33, 150, 243, 0.3);
+      letter-spacing: 0.5px;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.6s;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #1565c0 0%, #42a5f5 100%);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 25px rgba(33, 150, 243, 0.4);
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    button:active {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+    }
+
+    /* Right section styling */
+    .right-section {
+      flex: 0 0 350px;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 
+        0 15px 40px rgba(0, 0, 0, 0.1),
+        0 5px 15px rgba(0, 0, 0, 0.06);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 25px;
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(179, 229, 252, 0.4);
+      animation: cardFloat 8s ease-in-out infinite;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .right-section::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(179, 229, 252, 0.15) 0%, transparent 70%);
+      z-index: -1;
+    }
+
+    .qr-image {
+      width: 220px;
+      height: 220px;
+      object-fit: contain;
+      border-radius: 16px;
+      border: 2px solid #e1f5fe;
+      padding: 10px;
+      background: #f8fdff;
+      box-shadow: 0 8px 20px rgba(33, 150, 243, 0.15);
+      transition: all 0.4s ease;
+    }
+
+    .qr-image:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 30px rgba(33, 150, 243, 0.25);
+    }
+
+    .qr-message {
+      font-weight: 700;
+      font-size: 1.3rem;
+      background: linear-gradient(135deg, #1976d2, #42a5f5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.3px;
+    }
+
+    .donate-btn {
+      padding: 16px 30px;
+      background: linear-gradient(135deg, #00c853 0%, #64dd17 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      text-decoration: none;
+      box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.5px;
+    }
+
+    .donate-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.6s;
+    }
+
+    .donate-btn:hover {
+      background: linear-gradient(135deg, #00b248 0%, #4caf50 100%);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 25px rgba(76, 175, 80, 0.4);
+    }
+
+    .donate-btn:hover::before {
+      left: 100%;
+    }
+
+    /* NGO Section Styling */
+    .ngo-section {
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 20px;
+      padding: 30px;
+      width: 100%;
+      max-width: 1300px;
+      margin-top: 30px;
+      box-shadow: 
+        0 15px 40px rgba(80, 120, 220, 0.15),
+        0 5px 15px rgba(80, 120, 220, 0.08);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(179, 229, 252, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ngo-section::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(179, 229, 252, 0.1) 0%, transparent 70%);
+      z-index: -1;
+    }
+
+    .ngo-section h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      background: linear-gradient(135deg, #1976d2, #42a5f5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 1.8rem;
+    }
+
+    .ngo-question {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 1.2rem;
+      color: #0d3b66;
+      font-weight: 600;
+    }
+
+    .ngo-question span {
+      background: linear-gradient(135deg, #1976d2, #42a5f5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+    }
+
+    .ngo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .ngo-card {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(179, 229, 252, 0.3);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ngo-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(33, 150, 243, 0.15);
+      border-color: rgba(100, 181, 246, 0.5);
+    }
+
+    .ngo-card h3 {
+      color: #1976d2;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+    }
+
+    .ngo-card p {
+      color: #546e7a;
+      margin-bottom: 15px;
+      font-size: 0.95rem;
+      flex-grow: 1;
+    }
+
+    .ngo-link {
+      display: inline-block;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .ngo-link:hover {
+      background: linear-gradient(135deg, #1565c0 0%, #42a5f5 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+    }
+
+    /* Success popup animation */
+    .success-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      z-index: 1000;
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(179, 229, 252, 0.6);
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .success-popup.active {
+      transform: translate(-50%, -50%) scale(1);
+      animation: popupPulse 2s ease-in-out infinite;
+    }
+
+    .success-popup h3 {
+      color: #1976d2;
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+    }
+
+    .success-popup p {
+      color: #546e7a;
+      margin-bottom: 20px;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(13, 59, 102, 0.5);
+      backdrop-filter: blur(5px);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s ease;
+    }
+
+    .overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Animations */
+    @keyframes titleReveal {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes containerReveal {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes formFloat {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @keyframes cardFloat {
+      0%, 100% {
+        transform: translateY(0) rotate(0deg);
+      }
+      33% {
+        transform: translateY(-8px) rotate(0.5deg);
+      }
+      66% {
+        transform: translateY(-5px) rotate(-0.5deg);
+      }
+    }
+
+    @keyframes popupPulse {
+      0%, 100% {
+        box-shadow: 0 20px 60px rgba(33, 150, 243, 0.2);
+      }
+      50% {
+        box-shadow: 0 25px 80px rgba(33, 150, 243, 0.3);
+      }
+    }
+
+    /* Floating elements in background */
+    .floating-element {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(179, 229, 252, 0.15);
+      z-index: -1;
+      animation: float 20s infinite linear;
+    }
+
+    .floating-element:nth-child(1) {
+      width: 80px;
+      height: 80px;
+      top: 10%;
+      left: 5%;
+      animation-duration: 25s;
+    }
+
+    .floating-element:nth-child(2) {
+      width: 120px;
+      height: 120px;
+      top: 70%;
+      left: 10%;
+      animation-duration: 30s;
+    }
+
+    .floating-element:nth-child(3) {
+      width: 60px;
+      height: 60px;
+      top: 20%;
+      right: 8%;
+      animation-duration: 20s;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+      33% {
+        transform: translate(30px, -50px) rotate(120deg);
+      }
+      66% {
+        transform: translate(-20px, 20px) rotate(240deg);
+      }
+      100% {
+        transform: translate(0, 0) rotate(360deg);
+      }
+    }
+
+    /* Responsive design */
+    @media (max-width: 1100px) {
+      .donation-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 40px;
+      }
+      
+      .right-section {
+        width: 100%;
+        max-width: 500px;
+      }
+      
+      h1 {
+        font-size: 2.5rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 20px 15px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      form {
+        padding: 25px;
+      }
+      
+      .resource-box {
+        min-width: 120px;
+        padding: 15px 20px;
+      }
+      
+      .ngo-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Resource Donation Portal</h1>
+
+  <div class="donation-container">
+    <!-- Left: Resource counts + Form -->
+    <div class="left-section">
+      <div class="resource-counts" id="resourceCounts">
+        <!-- Live resource quantities will appear here -->
+      </div>
+
+      <form action="deposit.php" method="post">
+        <select name="resource" id="resource" required>
+          <option value="" disabled selected>Select Resource Type</option>
+          <option value="Water Bottles">Water Bottles</option>
+          <option value="Food Packets">Food Packets</option>
+          <option value="Blankets">Blankets</option>
+          <option value="Medicines">Medicines</option>
+          <option value="Clothing">Clothing</option>
+        </select>
+
+        <input type="number" name="quantity" id="quantity" placeholder="Quantity" required min="1">
+        <input type="text" name="name" placeholder="Your Name" required>
+        <input type="text" name="location" placeholder="Location" required>
+        <input type="tel" name="contact" placeholder="Contact Number" required pattern="[0-9]{10}">
+        
+        <button type="submit">Submit Donation</button>
+      </form>
+    </div>
+
+    <!-- Right: QR Code -->
+    <div class="right-section">
+      <img src="images/screenshot.png" alt="Screenshot" class="qr-image">
+      <div class="qr-message">Scan & Donate any Amount</div>
+      <a href="upi://pay?pa=7702787612@ybl" class="donate-btn">Donate Now</a>
+    </div>
+  </div>
+
+  <!-- NGO Section -->
+  <div class="ngo-section">
+    <h2>Partner with NGOs</h2>
+    <div class="ngo-question">
+      <span>Want to be part of an NGO?</span> Select an organization below to learn more and get involved.
+    </div>
+    <div class="ngo-grid">
+      <div class="ngo-card">
+        <h3>Smile Foundation</h3>
+        <p>Works for education, healthcare, and livelihood for underprivileged children and families.</p>
+        <a href="https://www.smilefoundationindia.org" target="_blank" class="ngo-link">Visit Website</a>
+      </div>
+      <div class="ngo-card">
+        <h3>GiveIndia Foundation</h3>
+        <p>Online donation platform that connects donors with verified nonprofits across India.</p>
+        <a href="https://www.giveindia.org" target="_blank" class="ngo-link">Visit Website</a>
+      </div>
+      <div class="ngo-card">
+        <h3>Child Rights and You (CRY)</h3>
+        <p>Works to restore children's rights in India, focusing on education, healthcare, and protection.</p>
+        <a href="https://www.cry.org" target="_blank" class="ngo-link">Visit Website</a>
+      </div>
+      <div class="ngo-card">
+        <h3>HelpAge India</h3>
+        <p>Works for the cause and care of disadvantaged elderly people in India.</p>
+        <a href="https://www.helpageindia.org" target="_blank" class="ngo-link">Visit Website</a>
+      </div>
+      <div class="ngo-card">
+        <h3>The Akshaya Patra Foundation</h3>
+        <p>Provides mid-day meals to children in government schools across India.</p>
+        <a href="https://www.akshayapatra.org" target="_blank" class="ngo-link">Visit Website</a>
+      </div>
+      <div class="ngo-card">
+        <h3>Goonj</h3>
+        <p>Focuses on disaster relief, humanitarian aid, and community development.</p>
+        <a href="https://www.goonj.org" target="_blank" class="ngo-link">Visit Website</a>
+      </div>
+      <div class="ngo-card">
+        <h3>Pratham Education Foundation</h3>
+        <p>Works to improve the quality of education for underprivileged children in India.</p>
+        <a href="https://www.pratham.org" target="_blank" class="ngo-link">Visit Website</a>
+      </div>
+      <div class="ngo-card">
+        <h3>Nanhi Kali</h3>
+        <p>Supports education for underprivileged girls in India.</p>
+        <a href="https://www.nanhikali.org" target="_blank" class="ngo-link">Visit Website</a>
+      </div>
+      <div class="ngo-card">
+        <h3>Bhumi</h3>
+        <p>One of India's largest independent youth volunteer non-profit organizations.</p>
+        <a href="https://www.bhumi.ngo" target="_blank" class="ngo-link">Visit Website</a>
+      </div>
+      <div class="ngo-card">
+        <h3>CARE India</h3>
+        <p>Focuses on empowering women and girls from poor and marginalized communities.</p>
+        <a href="https://www.careindia.org" target="_blank" class="ngo-link">Visit Website</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Popup -->
+  <div class="overlay" id="overlay"></div>
+  <div class="success-popup" id="successPopup">
+    <h3>Thank You!</h3>
+    <p>Your donation has been submitted successfully.</p>
+    <button onclick="closePopup()">Continue</button>
+  </div>
+
+  <script>
+    // Fetch current resource counts from the server
+    function renderResources() {
+      fetch('fetch_resources1.php')
+        .then(res => res.json())
+        .then(data => {
+          const container = document.getElementById('resourceCounts');
+          container.innerHTML = '';
+          for (let item in data) {
+            container.innerHTML += `<div class="resource-box">${item}: <span>${data[item]}</span></div>`;
+          }
+        });
+    }
+
+    // Initial load
+    renderResources();
+
+    // Optional: auto-refresh counts every 5 seconds
+    setInterval(renderResources, 5000);
+
+    // Form submission
+    document.querySelector('form').addEventListener('submit', function(e) {
+      // Show success popup
+      document.getElementById('successPopup').classList.add('active');
+      document.getElementById('overlay').classList.add('active');
+    });
+
+    // Close popup function
+    function closePopup() {
+      document.getElementById('successPopup').classList.remove('active');
+      document.getElementById('overlay').classList.remove('active');
+    }
+  </script>
+
+</body>
+</html>

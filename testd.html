@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Welcome Admin — DDMS</title>
+  <style>
+/* Modern Sky Blue & White Theme with Elegant Animations */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary-blue: #0ea5e9;
+  --sky-blue: #38bdf8;
+  --light-blue: #7dd3fc;
+  --soft-blue: #e0f2fe;
+  --white: #ffffff;
+  --off-white: #f8fafc;
+  --gray-light: #f1f5f9;
+  --gray-medium: #64748b;
+  --gray-dark: #334155;
+  --shadow-soft: 0 4px 20px rgba(14, 165, 233, 0.08);
+  --shadow-medium: 0 8px 30px rgba(14, 165, 233, 0.12);
+  --shadow-float: 0 15px 40px rgba(14, 165, 233, 0.15);
+  --gradient-sky: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 50%, #7dd3fc 100%);
+  --gradient-soft: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+  --border-radius: 16px;
+  --transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f7ff 50%, #ffffff 100%);
+  min-height: 100vh;
+  padding: 40px 20px;
+  line-height: 1.6;
+  color: var(--gray-dark);
+  animation: fadeInBody 1.2s ease-out;
+}
+
+@keyframes fadeInBody {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-float);
+  overflow: hidden;
+  animation: cardSlideIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border: 1px solid rgba(14, 165, 233, 0.1);
+  position: relative;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-sky);
+  animation: progressLoad 2s ease-in-out;
+}
+
+@keyframes cardSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes progressLoad {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 40px 40px 30px;
+  background: var(--gradient-soft);
+  border-bottom: 1px solid rgba(14, 165, 233, 0.1);
+  animation: headerReveal 0.8s ease-out 0.2s both;
+}
+
+@keyframes headerReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: var(--gradient-sky);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.sub {
+  color: var(--gray-medium);
+  font-size: 1.1rem;
+  font-weight: 400;
+}
+
+.logout-btn {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  color: var(--gray-dark);
+  border: 1px solid #cbd5e1;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 500;
+  transition: var(--transition-smooth);
+  box-shadow: 0 2px 10px rgba(100, 116, 139, 0.1);
+}
+
+.logout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(100, 116, 139, 0.15);
+  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+}
+
+.links {
+  padding: 30px 40px;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  animation: linksFadeIn 0.8s ease-out 0.4s both;
+}
+
+@keyframes linksFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.btn {
+  padding: 16px 28px;
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-bounce);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.6s;
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+.btn:not(.logout-btn) {
+  background: var(--gradient-sky);
+  color: white;
+  box-shadow: var(--shadow-soft);
+}
+
+.btn:not(.logout-btn):hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-float);
+}
+
+.analysis-btn {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  animation: pulseGlow 2s infinite;
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 30px rgba(245, 158, 11, 0.6);
+  }
+}
+
+.analysis-btn:hover {
+  animation: none;
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 8px 40px rgba(245, 158, 11, 0.5);
+}
+
+.pathbox {
+  background: var(--off-white);
+  margin: 0 40px 30px;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(14, 165, 233, 0.1);
+  animation: slideUp 0.6s ease-out 0.6s both;
+}
+
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#filesArea {
+  padding: 0 40px 40px;
+  animation: filesReveal 0.8s ease-out 0.8s both;
+}
+
+@keyframes filesReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.files {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.file {
+  padding: 16px;
+  background: var(--off-white);
+  border: 1px solid rgba(14, 165, 233, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  font-size: 0.9rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.file::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary-blue);
+  transition: width 0.3s ease;
+}
+
+.file:hover {
+  transform: translateY(-3px);
+  background: var(--soft-blue);
+  box-shadow: var(--shadow-soft);
+}
+
+.file:hover::after {
+  width: 100%;
+}
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(14, 165, 233, 0.1);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  animation: modalBackdrop 0.3s ease-out;
+}
+
+@keyframes modalBackdrop {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(8px);
+  }
+}
+
+.modal-content {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  background: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-float);
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s forwards;
+  border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+@keyframes modalSlideIn {
+  to {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.modal-header {
+  padding: 30px 30px 20px;
+  background: var(--gradient-soft);
+  border-bottom: 1px solid rgba(14, 165, 233, 0.1);
+  position: relative;
+}
+
+.modal-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  background: var(--gradient-sky);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+.close-btn {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--gray-medium);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-btn:hover {
+  background: rgba(14, 165, 233, 0.1);
+  color: var(--primary-blue);
+  transform: rotate(90deg);
+}
+
+.modal-content > div:not(.modal-header) {
+  padding: 0 30px 30px;
+}
+
+/* Feature List Animation */
+ul {
+  list-style: none;
+}
+
+li {
+  padding: 8px 0;
+  position: relative;
+  padding-left: 30px;
+  animation: listItemSlide 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+li:nth-child(1) { animation-delay: 0.1s; }
+li:nth-child(2) { animation-delay: 0.2s; }
+li:nth-child(3) { animation-delay: 0.3s; }
+li:nth-child(4) { animation-delay: 0.4s; }
+li:nth-child(5) { animation-delay: 0.5s; }
+li:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes listItemSlide {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 20px;
+  height: 20px;
+  background: var(--primary-blue);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  body {
+    padding: 20px 15px;
+  }
+  
+  header {
+    flex-direction: column;
+    gap: 20px;
+    padding: 30px 25px 20px;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  .links {
+    padding: 25px;
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .pathbox, #filesArea {
+    margin-left: 25px;
+    margin-right: 25px;
+  }
+  
+  .files {
+    grid-template-columns: 1fr;
+  }
+  
+  .modal-content {
+    width: 95%;
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--off-white);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--light-blue);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sky-blue);
+}
+
+/* Focus States for Accessibility */
+.btn:focus,
+.file:focus,
+.close-btn:focus {
+  outline: 2px solid var(--primary-blue);
+  outline-offset: 2px;
+}
+
+/* Loading Animation */
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+.loading {
+  animation: shimmer 1.5s infinite linear;
+  background: linear-gradient(to right, #f6f7f8 8%, #edeef1 18%, #f6f7f8 33%);
+  background-size: 800px 104px;
+}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <header>
+      <div>
+        <h1>Welcome Admin</h1>
+        <div class="sub">Disaster &amp; Disaster Management System (DDMS) — Frontend Launcher</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+        <small class="sub">Local Development</small>
+        <button class="btn logout-btn" onclick="logout()">Logout</button>
+      </div>
+    </header>
+
+    <div class="links">
+      <a class="btn" href="http://127.0.0.1/phpmyadmin/index.php?route=/database/structure&db=ddms" target="_blank" rel="noopener noreferrer">
+        Open phpMyAdmin — ddms
+      </a>
+      <button class="btn analysis-btn" onclick="openAnalysis()">
+        🚨 Disaster Analysis
+      </button>
+      <button class="btn" id="showFilesBtn" type="button">Show Project Files</button>
+    </div>
+
+    <div class="pathbox" id="pathbox">
+      <strong>Project folder:</strong>
+      <div style="margin-top:8px;font-size:14px;">C:\xampp\htdocs\ddms</div>
+    </div>
+
+    <div id="filesArea" style="display:none">
+      <h3>Files inside <code>C:\xampp\htdocs\ddms</code></h3>
+      <div class="files" id="filesList"></div>
+    </div>
+  </div>
+
+  <!-- Analysis Modal -->
+  <div id="analysisModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">🚨 Disaster Analysis System</h2>
+        <button class="close-btn" onclick="closeAnalysis()">×</button>
+      </div>
+      
+      <div style="margin-bottom: 20px;">
+        <p>Access the AI-powered disaster analysis and prediction system:</p>
+      </div>
+      
+      <div style="text-align: center; padding: 30px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f7ff 100%); border-radius: 12px; border: 2px solid #e2e8f0; margin-bottom: 20px;">
+        <h3 style="color: #059669; margin-bottom: 15px;">🌐 Standalone Analysis System</h3>
+        <p style="margin-bottom: 20px; color: #475569;">Launch the complete disaster analysis interface with AI-powered predictions</p>
+        <button class="btn analysis-btn" onclick="launchAnalysis()" style="width: 200px;">
+          Launch Analysis System
+        </button>
+      </div>
+      
+      <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; border-left: 4px solid #10b981;">
+        <h4 style="color: #059669; margin-bottom: 10px;">System Features:</h4>
+        <ul style="color: #475569; line-height: 1.6;">
+          <li>🤖 AI-Powered Disaster Severity Prediction</li>
+          <li>📊 Real-time Risk Assessment</li>
+          <li>🚨 Automated Alert Generation</li>
+          <li>📈 Impact Analysis & Forecasting</li>
+          <li>🎯 Actionable Emergency Recommendations</li>
+          <li>📱 Responsive Design for All Devices</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const sampleFiles = [
+      'images/',
+      'aboutd.php',
+      'ai_suggestions.php',
+      'config.php',
+      'contact_submit.php',
+      'contactd.php',
+      'deposit.php',
+      'disasters.php',
+      'fetch_resources.php',
+      'publogin.php',
+      'pubsign.php',
+      'resource_submit.php',
+      'resources.php',
+      'service.php',
+      'shelter_submit.php',
+      'shelters.php',
+      'success.php',
+      'test.php',
+      'thankyou.php',
+      'volldash.php',
+      'vollogin.php',
+      'volsignup.php',
+      'disaster_alert_system_standalone.html'
+    ];
+
+    document.getElementById('showFilesBtn').addEventListener('click', () => {
+      const area = document.getElementById('filesArea');
+      const list = document.getElementById('filesList');
+      if(area.style.display === 'none'){
+        list.innerHTML = '';
+        sampleFiles.forEach(f=>{
+          const d = document.createElement('div');
+          d.className='file';
+          d.textContent = f;
+          d.addEventListener('click', ()=>{
+            if(f === 'disaster_alert_system_standalone.html') {
+              launchAnalysis();
+            } else {
+              alert(`Opening file: ${f}\nPlease open it from your system at C:\\xampp\\htdocs\\ddms\\${f}`);
+            }
+          });
+          list.appendChild(d);
+        });
+        area.style.display = 'block';
+        window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+      } else {
+        area.style.display = 'none';
+      }
+    });
+
+    function logout(){
+      if(confirm("Are you sure you want to log out from the DDMS Admin Dashboard?")){
+        alert("You have successfully logged out.");
+        window.location.href = "test.html";
+      }
+    }
+
+    // Analysis System Functions
+    function openAnalysis() {
+      document.getElementById('analysisModal').style.display = 'block';
+    }
+
+    function closeAnalysis() {
+      document.getElementById('analysisModal').style.display = 'none';
+    }
+
+    function launchAnalysis() {
+      // Open the standalone analysis HTML file
+      window.open('disaster_alert_system_standalone.html', '_blank');
+      closeAnalysis();
+    }
+
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+      const modal = document.getElementById('analysisModal');
+      if (event.target === modal) {
+        closeAnalysis();
+      }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeAnalysis();
+      }
+    });
+  </script>
+</body>
+</html>

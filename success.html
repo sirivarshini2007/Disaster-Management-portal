@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Disaster Management Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-blue: #1a73e8;
+            --light-blue: #e8f0fe;
+            --dark-blue: #0d47a1;
+            --white: #ffffff;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #424242;
+            --success-green: #34a853;
+            --warning-red: #ea4335;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+        body {background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); color: var(--dark-gray); min-height:100vh;}
+        .container {display:flex; min-height:100vh;}
+        header {background-color:var(--white); box-shadow:var(--shadow); padding:1rem 2rem; display:flex; justify-content:space-between; align-items:center; position:fixed; width:100%; top:0; z-index:1000;}
+        .logo {display:flex; align-items:center; gap:10px; color: var(--primary-blue); font-weight:700; font-size:1.5rem;}
+        .logo i {font-size:2rem;}
+        .welcome-user {font-weight:600; color:var(--dark-gray);}
+        nav ul {display:flex; list-style:none; gap:2rem;}
+        nav a {text-decoration:none; color:var(--dark-gray); font-weight:500; padding:0.5rem 1rem; border-radius:4px; transition: all 0.3s ease;}
+        nav a:hover {background-color: var(--light-blue); color:var(--primary-blue);}
+        nav a.active {background-color: var(--primary-blue); color: var(--white);}
+
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: var(--white);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            box-shadow: var(--shadow);
+            margin: 0 1rem;
+            flex-grow: 1;
+            max-width: 500px;
+        }
+        .search-container i {
+            color: var(--dark-gray);
+            margin-right: 0.5rem;
+        }
+        .search-input {
+            border: none;
+            outline: none;
+            background: transparent;
+            width: 100%;
+            font-size: 1rem;
+            padding: 0.5rem 0;
+        }
+        .search-input::placeholder {
+            color: var(--medium-gray);
+        }
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-top: 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1001;
+            display: none;
+        }
+        .search-result-item {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--light-gray);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .search-result-item:hover {
+            background-color: var(--light-blue);
+        }
+        .search-result-item i {
+            color: var(--primary-blue);
+        }
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+        .search-result-category {
+            font-size: 0.8rem;
+            color: var(--dark-gray);
+            margin-left: auto;
+            background: var(--light-gray);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .sidebar {width:250px; background-color:var(--white); box-shadow:var(--shadow); padding:2rem 1rem; margin-top:80px; height:calc(100vh - 80px); position:fixed;}
+        .sidebar-menu {list-style:none;}
+        .sidebar-item {margin-bottom:1rem;}
+        .sidebar-link {display:flex; align-items:center; gap:10px; padding:0.8rem 1rem; text-decoration:none; color:var(--dark-gray); border-radius:8px; transition:all 0.3s ease;}
+        .sidebar-link:hover {background-color:var(--light-blue); color:var(--primary-blue); transform:translateX(5px);}
+        .sidebar-link.active {background-color: var(--primary-blue); color: var(--white);}
+        .sidebar-link i {font-size:1.2rem;}
+        .main-content {flex:1; margin-left:250px; margin-top:80px; padding:2rem;}
+        .dashboard-section {display:none; background-color: var(--white); border-radius:12px; box-shadow: var(--shadow); padding:2rem; margin-bottom:2rem;}
+        .dashboard-section.active {display:block;}
+        .section-title {color: var(--primary-blue); margin-bottom:1.5rem; padding-bottom:0.5rem; border-bottom:2px solid var(--light-blue); font-size:1.5rem;}
+        .cards-grid {display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.5rem;}
+        .card {background-color: var(--white); border-radius:10px; box-shadow: var(--shadow); padding:1.5rem; transition: transform 0.3s ease, box-shadow 0.3s ease; border-left:4px solid var(--primary-blue);}
+        .card:hover {transform:translateY(-5px); box-shadow:0 8px 16px rgba(0,0,0,0.15);}
+        .card-title {font-size:1.2rem; color:var(--dark-blue); margin-bottom:0.5rem;}
+        .card-content {color: var(--dark-gray); margin-bottom:1rem;}
+        .card-status {display:inline-block; padding:0.3rem 0.8rem; border-radius:20px; font-size:0.8rem; font-weight:600;}
+        .status-active {background-color: rgba(52,168,83,0.2); color: var(--success-green);}
+        .status-monitoring {background-color: rgba(234,67,53,0.2); color: var(--warning-red);}
+        .status-warning {background-color: rgba(234,67,53,0.2); color: var(--warning-red);}
+        .map-container {height:500px; border-radius:10px; overflow:hidden; margin-bottom:1.5rem; background-color: var(--light-gray); position: relative;}
+        .map-iframe {width:100%; height:100%; border:none;}
+        .shelter-marker {position:absolute; width:20px; height:20px; border-radius:50%; cursor:pointer; transform:translate(-50%,-50%); box-shadow:0 2px 5px rgba(0,0,0,0.3);}
+        .shelter-green {background-color: var(--success-green);}
+        .shelter-red {background-color: var(--warning-red);}
+        .resources-list {display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:1.5rem; margin-bottom:2rem;}
+        .resource-item {background-color: var(--white); border-radius:8px; box-shadow: var(--shadow); padding:1.5rem; display:flex; flex-direction:column; transition: transform 0.3s ease;}
+        .resource-item:hover {transform:translateY(-5px);}
+        .resource-header {display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;}
+        .resource-name {font-weight:600; color:var(--dark-blue);}
+        .resource-quantity {background-color: var(--light-blue); color:var(--primary-blue); padding:0.3rem 0.8rem; border-radius:20px; font-size:0.9rem; font-weight:600;}
+        .resource-quantity.low {background-color: var(--warning-red); color: white;}
+        .resource-description {color:var(--dark-gray); margin-bottom:1rem; flex-grow:1;}
+        .checkbox-container {display:flex; align-items:center; gap:0.5rem; margin-top:auto;}
+        .analytics-container {display:grid; grid-template-columns:2fr 1fr; gap:2rem;}
+        .chart-container, .suggestions-container {background-color:var(--white); border-radius:10px; box-shadow:var(--shadow); padding:1.5rem;}
+        .chart-placeholder {height:300px; display:flex; align-items:center; justify-content:center;}
+        .suggestion-item {padding:1rem; border-left:3px solid var(--primary-blue); background-color: var(--light-blue); margin-bottom:1rem; border-radius:0 8px 8px 0;}
+        .modal {display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center;}
+        .modal-content {background-color:var(--white); border-radius:10px; box-shadow:var(--shadow); padding:2rem; width:90%; max-width:500px;}
+        .modal-header {display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;}
+        .modal-title {color:var(--primary-blue); font-size:1.3rem;}
+        .close-modal {background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--dark-gray);}
+        .form-container {}
+        .form-group {margin-bottom:1.5rem;}
+        .form-label {display:block; margin-bottom:0.5rem; font-weight:600; color:var(--dark-gray);}
+        .form-input {width:100%; padding:0.8rem 1rem; border:1px solid var(--medium-gray); border-radius:6px; font-size:1rem; transition:border-color 0.3s ease;}
+        .form-input:focus {outline:none; border-color:var(--primary-blue); box-shadow:0 0 0 2px rgba(26,115,232,0.2);}
+        .btn {padding:0.8rem 1.5rem; border:none; border-radius:6px; font-size:1rem; font-weight:600; cursor:pointer; transition: all 0.3s ease;}
+        .btn-primary {background-color: var(--primary-blue); color: var(--white);}
+        .btn-primary:hover {background-color: var(--dark-blue); transform:translateY(-2px);}
+        .btn-block {width:100%;}
+        @media (max-width:992px) {.sidebar{width:200px;} .main-content{margin-left:200px;} .analytics-container{grid-template-columns:1fr;}}
+        @media (max-width:768px) {.container{flex-direction:column;} .sidebar{width:100%; height:auto; position:static; margin-top:0;} .main-content{margin-left:0; margin-top:0;} nav ul{gap:1rem;} .cards-grid{grid-template-columns:1fr;} .search-container {margin: 0.5rem 0; max-width: 100%;}}
+        
+        .loading {text-align: center; padding: 2rem; color: var(--dark-gray);}
+        .error {text-align: center; padding: 2rem; color: var(--warning-red);}
+        
+        .update-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--success-green);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            z-index: 2000;
+            display: none;
+        }
+        
+        .shelter-info {
+            position: absolute;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: var(--shadow);
+            z-index: 10;
+            display: none;
+            max-width: 200px;
+        }
+        
+        .success-message {
+            background-color: var(--success-green);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .alert-message {
+            background-color: var(--warning-red);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .ai-suggestion-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary-blue);
+            transition: transform 0.3s ease;
+        }
+        
+        .ai-suggestion-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .ai-category {
+            display: inline-block;
+            background: var(--light-blue);
+            color: var(--primary-blue);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        
+        .category-operational { background-color: #e3f2fd; color: #1976d2; }
+        .category-logistics { background-color: #e8f5e8; color: #2e7d32; }
+        .category-communication { background-color: #fff3e0; color: #ef6c00; }
+        .category-analysis { background-color: #fce4ec; color: #c2185b; }
+
+        /* Chatbot Styles */
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .chatbot-header {
+            background: var(--primary-blue);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chatbot-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+        
+        .chatbot-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chatbot-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .chatbot-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            line-height: 1.4;
+        }
+        
+        .message-bot {
+            background: var(--light-blue);
+            color: var(--dark-gray);
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .message-user {
+            background: var(--primary-blue);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .chatbot-input-container {
+            padding: 15px;
+            border-top: 1px solid var(--light-gray);
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chatbot-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 25px;
+            outline: none;
+        }
+        
+        .chatbot-input:focus {
+            border-color: var(--primary-blue);
+        }
+        
+        .chatbot-send {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chatbot-send:hover {
+            background: var(--dark-blue);
+        }
+        
+        .chatbot-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+        
+        .chatbot-toggle:hover {
+            background: var(--dark-blue);
+            transform: scale(1.1);
+        }
+        
+        .chatbot-hidden {
+            transform: translateY(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .quick-action-btn {
+            background: var(--light-blue);
+            border: 1px solid var(--medium-gray);
+            border-radius: 15px;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .quick-action-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .message-time {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 10px 15px;
+            background: var(--light-blue);
+            border-radius: 18px;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+            max-width: 80px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--dark-gray);
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+        
+        .suggestion-item {
+            background: var(--light-blue);
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin: 5px 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .suggestion-item:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo"><i class="fas fa-shield-alt"></i><span>DisasterResponse</span></div>
+    <div class="search-container">
+        <i class="fas fa-search"></i>
+        <input type="text" class="search-input" placeholder="Search disasters, shelters, resources..." id="search-input">
+        <div class="search-results" id="search-results"></div>
+    </div>
+    <nav>
+        <ul>
+            <li><a href="#" class="active">Home</a></li>
+            <li><a href="aboutd.html">About</a></li>
+            <li><a href="contactd.html">Contact</a></li>
+            <li><a href="service.html">Services</a></li>
+            <li><a href="test.html">Logout</a></li>
+        </ul>
+    </nav>
+    <div class="welcome-user">Welcome, User <i class="fas fa-user-circle"></i></div>
+</header>
+
+<div class="container">
+    <aside class="sidebar">
+        <ul class="sidebar-menu">
+            <li class="sidebar-item"><a href="#" class="sidebar-link active" data-section="disasters"><i class="fas fa-exclamation-triangle"></i><span>Disasters</span></a></li>
+            <li class="sidebar-item"><a href="#" class="sidebar-link" data-section="shelters"><i class="fas fa-home"></i><span>Shelters</span></a></li>
+            <li class="sidebar-item"><a href="#" class="sidebar-link" data-section="resources"><i class="fas fa-boxes"></i><span>Resources</span></a></li>
+            <li class="sidebar-item"><a href="#" class="sidebar-link" data-section="ai-suggestions"><i class="fas fa-robot"></i><span>AI Suggestions</span></a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <!-- Disasters -->
+        <section id="disasters" class="dashboard-section active">
+            <h2 class="section-title">Active Disasters</h2>
+            <div class="cards-grid" id="disasters-container">
+                <div class="loading">Loading disasters...</div>
+            </div>
+        </section>
+
+        <!-- Shelters -->
+        <section id="shelters" class="dashboard-section">
+            <h2 class="section-title">Available Shelters</h2>
+            <div id="shelter-message"></div>
+            <div class="map-container" id="map-container">
+                <div id="map-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></div>
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d15669.123456!2d78.4203776!3d17.4358528!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1700000000000"
+                    width="100%" height="100%" style="border:0; border-radius:10px;" allowfullscreen="" loading="lazy"></iframe>
+                <div class="loading">Loading shelters...</div>
+            </div>
+        </section>
+
+        <!-- Resources -->
+        <section id="resources" class="dashboard-section">
+            <h2 class="section-title">Available Resources</h2>
+            <div id="resource-message"></div>
+            <div class="resources-list" id="resources-container">
+                <div class="loading">Loading resources...</div>
+            </div>
+            <button id="request-resources" class="btn btn-primary">Request Selected Resources</button>
+        </section>
+
+        <!-- AI Suggestions -->
+        <section id="ai-suggestions" class="dashboard-section">
+            <h2 class="section-title">AI-Powered Insights & Suggestions</h2>
+            <div class="analytics-container">
+                <div class="chart-container">
+                    <h3>Disaster Impact Analytics</h3>
+                    <canvas id="disasterChart"></canvas>
+                </div>
+                <div class="suggestions-container">
+                    <h3>Weather Updates</h3>
+                    <div id="weather-updates">
+                        <div class="suggestion-item">
+                            <strong>Heavy Rain Expected</strong>
+                            <p>High probability of rainfall in the next 48 hours. Prepare for potential flooding.</p>
+                        </div>
+                        <div class="suggestion-item">
+                            <strong>Temperature Drop</strong>
+                            <p>Significant temperature decrease expected. Ensure warm shelters are available.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h3 style="margin-top: 2rem;">Recent AI Recommendations</h3>
+            <div class="cards-grid" id="ai-suggestions-container">
+                <div class="loading">Loading AI suggestions...</div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- Shelter Modal -->
+<div id="shelter-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Register for Shelter</h3>
+            <button class="close-modal">&times;</button>
+        </div>
+        <form id="shelter-form">
+            <div class="form-group">
+                <label class="form-label" for="user-name">Full Name</label>
+                <input type="text" id="user-name" name="user_name" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="user-location">Current Location</label>
+                <input type="text" id="user-location" name="user_location" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="user-contact">Contact Number</label>
+                <input type="tel" id="user-contact" name="user_contact" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="shelter-name">Selected Shelter</label>
+                <input type="text" id="shelter-name" name="shelter_name" class="form-input" readonly>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="people-count">Number of People</label>
+                <input type="number" id="people-count" name="people_count" class="form-input" min="1" max="10" required>
+            </div>
+            <input type="hidden" id="shelter-id" name="shelter_id">
+            <button type="submit" class="btn btn-primary btn-block">Submit Registration</button>
+        </form>
+    </div>
+</div>
+
+<!-- Resource Request Modal -->
+<div id="resource-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Request Resources</h3>
+            <button class="close-modal">&times;</button>
+        </div>
+        <form id="resource-form">
+            <div class="form-group">
+                <label class="form-label" for="requester-name">
+                    <i class="fas fa-user"></i> Full Name
+                </label>
+                <input type="text" id="requester-name" name="requester_name" class="form-input" 
+                       placeholder="Enter your full name" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="requester-contact">
+                    <i class="fas fa-phone"></i> Contact Number
+                </label>
+                <input type="tel" id="requester-contact" name="requester_contact" class="form-input" 
+                       placeholder="10-digit phone number" pattern="[0-9]{10}" required>
+                <small style="color: #666; font-size: 0.8rem;">Format: 9876543210</small>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="requester-location">
+                    <i class="fas fa-map-marker-alt"></i> Delivery Location
+                </label>
+                <textarea id="requester-location" name="requester_location" class="form-input" 
+                          placeholder="Enter complete delivery address with landmarks" 
+                          rows="3" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-clipboard-list"></i> Selected Resources & Quantities
+                </label>
+                <div id="selected-resources-list" style="background: var(--light-blue); padding: 1rem; border-radius: 6px; margin-bottom: 1rem; max-height: 300px; overflow-y: auto;">
+                    <p style="margin: 0; color: var(--dark-gray); font-style: italic;">No resources selected</p>
+                </div>
+                <input type="hidden" id="selected-resources-data" name="resources_data">
+                
+                <div style="background: #f8f9fa; padding: 0.8rem; border-radius: 4px;">
+                    <small style="color: #666;">
+                        <i class="fas fa-info-circle"></i> 
+                        Specify quantities for each selected resource. Available quantities are shown.
+                    </small>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="urgency-level">
+                    <i class="fas fa-exclamation-triangle"></i> Urgency Level
+                </label>
+                <select id="urgency-level" name="urgency_level" class="form-input" required>
+                    <option value="">Select urgency level</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                    <option value="Critical">Critical</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="additional-notes">
+                    <i class="fas fa-sticky-note"></i> Additional Notes
+                </label>
+                <textarea id="additional-notes" name="additional_notes" class="form-input" 
+                          placeholder="Any special instructions or additional information..." 
+                          rows="3"></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">
+                <i class="fas fa-paper-plane"></i> Submit Resource Request
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Chatbot Toggle Button -->
+<button class="chatbot-toggle" id="chatbotToggle">
+    <i class="fas fa-comments"></i>
+</button>
+
+<!-- Chatbot Container -->
+<div class="chatbot-container chatbot-hidden" id="chatbotContainer">
+    <div class="chatbot-header">
+        <div class="chatbot-title">
+            <i class="fas fa-robot"></i>
+            <span>Disaster Assistant</span>
+        </div>
+        <div class="chatbot-actions">
+            <button class="chatbot-btn" id="chatbotMinimize">
+                <i class="fas fa-minus"></i>
+            </button>
+            <button class="chatbot-btn" id="chatbotClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    <div class="chatbot-messages" id="chatbotMessages">
+        <div class="message message-bot">
+            <div>Hello! I'm your Disaster Response Assistant. How can I help you today?</div>
+            <div class="message-time">Just now</div>
+            <div class="quick-actions">
+                <button class="quick-action-btn" data-action="shelters">Find Shelters</button>
+                <button class="quick-action-btn" data-action="resources">Check Resources</button>
+                <button class="quick-action-btn" data-action="disasters">Active Disasters</button>
+                <button class="quick-action-btn" data-action="safety">Safety Tips</button>
+            </div>
+        </div>
+    </div>
+    <div class="chatbot-input-container">
+        <input type="text" class="chatbot-input" id="chatbotInput" placeholder="Type your message...">
+        <button class="chatbot-send" id="chatbotSend">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+// Global variables to store data
+let disastersData = [];
+let resourcesData = [];
+let sheltersData = [];
+let aiSuggestionsData = [];
+let userLocation = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Dashboard loaded - starting data fetch...');
+    
+    // Load all data from the database
+    loadDisasters();
+    loadResources();
+    loadShelters();
+    loadAISuggestions();
+
+    // Set up auto-refresh every 10 seconds for real-time updates
+    setInterval(() => {
+        loadResources();
+        loadShelters();
+        loadAISuggestions();
+    }, 10000);
+
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    const sections = document.querySelectorAll('.dashboard-section');
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', function(e){
+            e.preventDefault();
+            sidebarLinks.forEach(l => l.classList.remove('active'));
+            sections.forEach(s => s.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById(this.dataset.section).classList.add('active');
+        });
+    });
+
+    // Resource request button event listener
+    const requestResourcesBtn = document.getElementById('request-resources');
+    const resourceModal = document.getElementById('resource-modal');
+
+    if (requestResourcesBtn) {
+        requestResourcesBtn.addEventListener('click', function(){
+            console.log('Request resources button clicked');
+            updateSelectedResourcesList();
+            
+            const selectedCount = document.querySelectorAll('.resource-checkbox:checked').length;
+            console.log('Selected resources:', selectedCount);
+            
+            if(selectedCount === 0){
+                alert("Please select at least one resource to request.");
+                return;
+            }
+            resourceModal.style.display = 'flex';
+        });
+    }
+
+    // Modal close functionality
+    const closeModalButtons = document.querySelectorAll('.close-modal');
+    closeModalButtons.forEach(btn => {
+        btn.addEventListener('click', function(){ 
+            console.log('Closing modal');
+            btn.closest('.modal').style.display = 'none'; 
+        });
+    });
+
+    window.addEventListener('click', function(e){
+        if(e.target.classList.contains('modal')) {
+            e.target.style.display = 'none';
+        }
+    });
+
+    // Handle shelter form submission with AJAX
+    const shelterForm = document.getElementById('shelter-form');
+    if (shelterForm) {
+        shelterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitShelterForm();
+        });
+    }
+
+    // Handle resource form submission with AJAX
+    const resourceForm = document.getElementById('resource-form');
+    if (resourceForm) {
+        resourceForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitResourceForm();
+        });
+    }
+
+    // Bar chart using Chart.js
+    const ctx = document.getElementById('disasterChart');
+    if (ctx) {
+        const disasterChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Flood', 'Wildfire', 'Earthquake', 'Hurricane', 'Tornado'],
+                datasets: [{
+                    label: 'Number of Affected People',
+                    data: [5000, 1200, 800, 3000, 1500],
+                    backgroundColor: ['#1a73e8','#34a853','#ea4335','#1a73e8','#34a853']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: true } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+
+    // Search functionality
+    const searchInput = document.getElementById('search-input');
+    const searchResults = document.getElementById('search-results');
+
+    if (searchInput && searchResults) {
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            
+            if (query.length < 2) {
+                searchResults.style.display = 'none';
+                return;
+            }
+            
+            const allData = [
+                ...disastersData.map(item => ({...item, type: 'disaster', icon: 'fa-exclamation-triangle', title: item.name})),
+                ...sheltersData.map(item => ({...item, type: 'shelter', icon: 'fa-home', title: item.name})),
+                ...resourcesData.map(item => ({...item, type: 'resource', icon: 'fa-boxes', title: item.name})),
+                ...aiSuggestionsData.map(item => ({...item, type: 'ai-suggestion', icon: 'fa-robot', title: item.title}))
+            ];
+            
+            const filteredResults = allData.filter(item => 
+                item.title.toLowerCase().includes(query) || 
+                (item.description && item.description.toLowerCase().includes(query)) ||
+                (item.status && item.status.toLowerCase().includes(query)) ||
+                (item.location && item.location.toLowerCase().includes(query)) ||
+                (item.category && item.category.toLowerCase().includes(query))
+            );
+            
+            displaySearchResults(filteredResults);
+        });
+
+        function displaySearchResults(results) {
+            searchResults.innerHTML = '';
+            
+            if (results.length === 0) {
+                const noResult = document.createElement('div');
+                noResult.className = 'search-result-item';
+                noResult.innerHTML = '<i class="fas fa-search"></i> No results found';
+                searchResults.appendChild(noResult);
+            } else {
+                results.forEach(result => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'search-result-item';
+                    
+                    resultItem.innerHTML = `
+                        <i class="fas ${result.icon}"></i>
+                        <div>
+                            <div>${result.title || result.name}</div>
+                            <small>${result.description || ''}</small>
+                        </div>
+                        <span class="search-result-category">${result.type}</span>
+                    `;
+                    
+                    resultItem.addEventListener('click', function() {
+                        navigateToResult(result);
+                    });
+                    
+                    searchResults.appendChild(resultItem);
+                });
+            }
+            
+            searchResults.style.display = 'block';
+        }
+
+        function navigateToResult(result) {
+            sections.forEach(section => section.classList.remove('active'));
+            sidebarLinks.forEach(link => link.classList.remove('active'));
+            
+            const targetSection = document.getElementById(result.type === 'ai-suggestion' ? 'ai-suggestions' : result.type + 's');
+            const targetLink = document.querySelector(`[data-section="${result.type === 'ai-suggestion' ? 'ai-suggestions' : result.type + 's'}"]`);
+            
+            if (targetSection && targetLink) {
+                targetSection.classList.add('active');
+                targetLink.classList.add('active');
+            }
+            
+            searchResults.style.display = 'none';
+            searchInput.value = '';
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.style.display = 'none';
+            }
+        });
+    }
+
+    // Chatbot functionality
+    initializeChatbot();
+});
+
+// Function to update the selected resources list with quantity inputs
+function updateSelectedResourcesList() {
+    const selectedResourcesList = document.getElementById('selected-resources-list');
+    if (!selectedResourcesList) {
+        console.error('Selected resources list element not found');
+        return;
+    }
+    
+    selectedResourcesList.innerHTML = '';
+    
+    const selectedCheckboxes = document.querySelectorAll('.resource-checkbox:checked');
+    console.log('Found selected checkboxes:', selectedCheckboxes.length);
+    
+    if (selectedCheckboxes.length === 0) {
+        selectedResourcesList.innerHTML = '<p style="margin: 0; color: var(--dark-gray); font-style: italic;">No resources selected</p>';
+        return;
+    }
+    
+    selectedCheckboxes.forEach(cb => {
+        const resourceItem = cb.closest('.resource-item');
+        if (!resourceItem) return;
+        
+        const resourceId = cb.value;
+        const name = resourceItem.querySelector('.resource-name').innerText;
+        const quantityElement = resourceItem.querySelector('.resource-quantity');
+        const availableQuantity = parseInt(quantityElement.innerText);
+        
+        console.log(`Processing resource: ${name}, ID: ${resourceId}, Available: ${availableQuantity}`);
+        
+        // Create resource selection item with quantity input
+        const resourceDiv = document.createElement('div');
+        resourceDiv.className = 'resource-selection-item';
+        resourceDiv.style.cssText = 'padding: 10px; margin: 8px 0; background: white; border-radius: 6px; border: 1px solid var(--medium-gray);';
+        
+        resourceDiv.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <strong>${name}</strong>
+                <span style="font-size: 0.8rem; color: var(--dark-gray);">Available: ${availableQuantity}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <label style="font-size: 0.9rem;">Request Quantity:</label>
+                <input type="number" 
+                       class="resource-quantity-input" 
+                       data-resource-id="${resourceId}"
+                       data-max-quantity="${availableQuantity}"
+                       min="1" 
+                       max="${availableQuantity}" 
+                       value="1"
+                       style="padding: 5px; border: 1px solid var(--medium-gray); border-radius: 4px; width: 80px;">
+                <button type="button" class="remove-resource-btn" data-resource-id="${resourceId}" 
+                        style="background: var(--warning-red); color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer; font-size: 0.8rem;">
+                    Remove
+                </button>
+            </div>
+        `;
+        
+        selectedResourcesList.appendChild(resourceDiv);
+    });
+    
+    // Add event listeners for remove buttons
+    document.querySelectorAll('.remove-resource-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const resourceId = this.getAttribute('data-resource-id');
+            console.log('Removing resource:', resourceId);
+            const checkbox = document.querySelector(`.resource-checkbox[value="${resourceId}"]`);
+            if(checkbox) {
+                checkbox.checked = false;
+                updateSelectedResourcesList();
+            }
+        });
+    });
+    
+    // Add event listeners for quantity inputs
+    document.querySelectorAll('.resource-quantity-input').forEach(input => {
+        input.addEventListener('change', function() {
+            const maxQuantity = parseInt(this.getAttribute('data-max-quantity'));
+            const enteredQuantity = parseInt(this.value) || 0;
+            
+            if(enteredQuantity > maxQuantity) {
+                alert(`Cannot request more than ${maxQuantity} units. Available quantity is ${maxQuantity}.`);
+                this.value = maxQuantity;
+            } else if(enteredQuantity < 1) {
+                this.value = 1;
+            }
+        });
+        
+        input.addEventListener('input', function() {
+            const maxQuantity = parseInt(this.getAttribute('data-max-quantity'));
+            let enteredQuantity = parseInt(this.value) || 0;
+            
+            if(enteredQuantity > maxQuantity) {
+                this.value = maxQuantity;
+            } else if(enteredQuantity < 1) {
+                this.value = 1;
+            }
+        });
+    });
+    
+    console.log('Selected resources list updated');
+}
+
+// Function to submit resource form via AJAX
+function submitResourceForm() {
+    console.log('Submitting resource form...');
+    
+    // Collect all selected resources with quantities
+    const selectedResources = [];
+    let total_requested_quantity = 0;
+    
+    const quantityInputs = document.querySelectorAll('.resource-quantity-input');
+    console.log('Found quantity inputs:', quantityInputs.length);
+    
+    quantityInputs.forEach(input => {
+        const resourceId = input.getAttribute('data-resource-id');
+        const quantity = parseInt(input.value) || 0;
+        const maxQuantity = parseInt(input.getAttribute('data-max-quantity'));
+        
+        if(quantity > 0) {
+            // Find the resource name
+            const checkbox = document.querySelector(`.resource-checkbox[value="${resourceId}"]`);
+            if (!checkbox) return;
+            
+            const resourceItem = checkbox.closest('.resource-item');
+            const resourceName = resourceItem.querySelector('.resource-name').innerText;
+            
+            selectedResources.push({
+                id: resourceId,
+                name: resourceName,
+                quantity: quantity,
+                max_quantity: maxQuantity
+            });
+            total_requested_quantity += quantity;
+            
+            console.log(`Added resource: ${resourceName}, Quantity: ${quantity}`);
+        }
+    });
+    
+    console.log('Total selected resources:', selectedResources.length);
+    console.log('Total quantity:', total_requested_quantity);
+    
+    if(selectedResources.length === 0) {
+        alert('Please select at least one resource and specify quantities.');
+        return;
+    }
+    
+    // Validate all fields
+    const requesterName = document.getElementById('requester-name').value.trim();
+    const requesterContact = document.getElementById('requester-contact').value.trim();
+    const requesterLocation = document.getElementById('requester-location').value.trim();
+    const urgencyLevel = document.getElementById('urgency-level').value;
+    const additionalNotes = document.getElementById('additional-notes').value.trim();
+    
+    if(!requesterName || !requesterContact || !requesterLocation || !urgencyLevel) {
+        alert('Please fill all required fields.');
+        return;
+    }
+    
+    // Validate phone number
+    if(!/^[0-9]{10}$/.test(requesterContact)) {
+        alert('Please enter a valid 10-digit phone number.');
+        return;
+    }
+    
+    // Create form data
+    const formData = new FormData();
+    formData.append('requester_name', requesterName);
+    formData.append('requester_contact', requesterContact);
+    formData.append('requester_location', requesterLocation);
+    formData.append('urgency_level', urgencyLevel);
+    formData.append('additional_notes', additionalNotes);
+    formData.append('resources_data', JSON.stringify(selectedResources));
+    formData.append('total_requested_quantity', total_requested_quantity);
+    
+    console.log('Form data prepared, sending request...');
+    
+    // Show loading state
+    const submitBtn = document.querySelector('#resource-form button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    submitBtn.disabled = true;
+    
+    fetch('resource_submit.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        console.log('Response received');
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data);
+        if(data.success) {
+            document.getElementById('resource-modal').style.display = 'none';
+            document.getElementById('resource-form').reset();
+            
+            // Uncheck all resource checkboxes
+            document.querySelectorAll('.resource-checkbox').forEach(cb => {
+                cb.checked = false;
+            });
+            
+            showMessage('resource-message', data.message, true);
+            
+            // Redirect to success page after 2 seconds
+            setTimeout(() => {
+                window.location.href = 'success.html';
+            }, 2000);
+            
+            // Reload resources to reflect updated quantities
+            setTimeout(() => {
+                loadResources();
+            }, 1000);
+        } else {
+            showMessage('resource-message', data.message, false);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showMessage('resource-message', 'Error submitting resource request. Please try again.', false);
+    })
+    .finally(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+}
+
+// Function to show messages
+function showMessage(elementId, message, isSuccess) {
+    const element = document.getElementById(elementId);
+    if (!element) {
+        console.error('Message element not found:', elementId);
+        return;
+    }
+    
+    if (typeof message === 'object' && message.message) {
+        // Handle JSON response object
+        element.innerHTML = `<div class="${message.success ? 'success-message' : 'alert-message'}">${message.message}</div>`;
+    } else {
+        // Handle string message
+        element.innerHTML = `<div class="${isSuccess ? 'success-message' : 'alert-message'}">${message}</div>`;
+    }
+    
+    setTimeout(() => {
+        element.innerHTML = '';
+    }, 5000);
+}
+
+// Function to load disasters from database
+function loadDisasters() {
+    fetch('fetch_disasters.php')
+        .then(response => response.json())
+        .then(data => {
+            disastersData = data;
+            const container = document.getElementById('disasters-container');
+            
+            if (!container) return;
+            
+            if (data.length === 0) {
+                container.innerHTML = '<div class="error">No disasters found in the database.</div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            data.forEach(disaster => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                
+                let statusClass = 'status-active';
+                if (disaster.status === 'Monitoring') statusClass = 'status-monitoring';
+                else if (disaster.status === 'Warning') statusClass = 'status-warning';
+                
+                card.innerHTML = `
+                    <h3 class="card-title">${disaster.name}</h3>
+                    <p class="card-content"><strong>Type:</strong> ${disaster.type} | <strong>Location:</strong> ${disaster.location}</p>
+                    <p class="card-content">${disaster.description}</p>
+                    <span class="card-status ${statusClass}">${disaster.status}</span>
+                `;
+                
+                container.appendChild(card);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading disasters:', error);
+            const container = document.getElementById('disasters-container');
+            if (container) {
+                container.innerHTML = '<div class="error">Error loading disasters. Please try again later.</div>';
+            }
+        });
+}
+
+// Function to load resources from database
+function loadResources() {
+    fetch('fetch_resources.php')
+        .then(response => response.json())
+        .then(data => {
+            resourcesData = data;
+            const container = document.getElementById('resources-container');
+            
+            if (!container) return;
+            
+            if (data.length === 0) {
+                container.innerHTML = '<div class="error">No resources found in the database.</div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            data.forEach(resource => {
+                const item = document.createElement('div');
+                item.className = 'resource-item';
+                
+                // Add low quantity warning class if quantity is less than 50
+                const quantityClass = resource.quantity < 50 ? 'resource-quantity low' : 'resource-quantity';
+                
+                item.innerHTML = `
+                    <div class="resource-header">
+                        <span class="resource-name">${resource.name}</span>
+                        <span class="${quantityClass}">${resource.quantity} units</span>
+                    </div>
+                    ${resource.description ? `<p class="resource-description">${resource.description}</p>` : ''}
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="resource-${resource.id}" class="resource-checkbox" value="${resource.id}">
+                        <label for="resource-${resource.id}">Request this resource</label>
+                    </div>
+                `;
+                
+                container.appendChild(item);
+            });
+            
+            console.log('Resources loaded:', data.length);
+        })
+        .catch(error => {
+            console.error('Error loading resources:', error);
+            const container = document.getElementById('resources-container');
+            if (container) {
+                container.innerHTML = '<div class="error">Error loading resources. Please try again later.</div>';
+            }
+        });
+}
+
+// Function to load shelters from database
+function loadShelters() {
+    fetch('fetch_shelters.php')
+        .then(response => response.json())
+        .then(data => {
+            sheltersData = data;
+            const mapContainer = document.getElementById('map-container');
+            const mapOverlay = document.getElementById('map-overlay');
+            
+            if (!mapContainer) return;
+            
+            if (data.length === 0) {
+                mapContainer.innerHTML += '<div class="error">No shelters found in the database.</div>';
+                return;
+            }
+            
+            // Remove loading message
+            const loadingElement = mapContainer.querySelector('.loading');
+            if (loadingElement) {
+                loadingElement.remove();
+            }
+            
+            // Clear existing markers
+            if (mapOverlay) {
+                mapOverlay.innerHTML = '';
+            }
+            
+            // Add new markers
+            data.forEach(shelter => {
+                const marker = document.createElement('div');
+                // Check if current_capacity < max_capacity for availability
+                const isAvailable = parseInt(shelter.current_capacity) < parseInt(shelter.max_capacity);
+                marker.className = `shelter-marker ${isAvailable ? 'shelter-green' : 'shelter-red'}`;
+                
+                // Random position for demo
+                const randomX = 10 + Math.random() * 80;
+                const randomY = 10 + Math.random() * 80;
+                marker.style.top = `${randomY}%`;
+                marker.style.left = `${randomX}%`;
+                marker.dataset.capacity = shelter.current_capacity;
+                marker.dataset.maxCapacity = shelter.max_capacity;
+                marker.dataset.name = shelter.name;
+                marker.dataset.id = shelter.id;
+                marker.dataset.location = shelter.location;
+                
+                // Create info tooltip
+                const info = document.createElement('div');
+                info.className = 'shelter-info';
+                info.id = `shelter-info-${shelter.id}`;
+                info.innerHTML = `
+                    <strong>${shelter.name}</strong><br>
+                    Location: ${shelter.location}<br>
+                    Current: ${shelter.current_capacity}/${shelter.max_capacity}<br>
+                    Status: ${isAvailable ? 'Available' : 'Full'}
+                `;
+                info.style.top = `${parseFloat(marker.style.top) - 10}%`;
+                info.style.left = `${parseFloat(marker.style.left) + 2}%`;
+                
+                if (mapOverlay) {
+                    mapOverlay.appendChild(info);
+                }
+                
+                marker.addEventListener('mouseover', function() {
+                    info.style.display = 'block';
+                });
+                
+                marker.addEventListener('mouseout', function() {
+                    info.style.display = 'none';
+                });
+                
+                marker.addEventListener('click', function(){
+                    const currentCapacity = parseInt(this.dataset.capacity);
+                    const maxCapacity = parseInt(this.dataset.maxCapacity);
+                    const name = this.dataset.name;
+                    const id = this.dataset.id;
+                    
+                    if(!isAvailable || currentCapacity >= maxCapacity){
+                        alert('This shelter is currently at full capacity. Please select another shelter.');
+                    } else {
+                        document.getElementById('shelter-name').value = name;
+                        document.getElementById('shelter-id').value = id;
+                        document.getElementById('shelter-modal').style.display = 'flex';
+                    }
+                });
+                
+                if (mapOverlay) {
+                    mapOverlay.appendChild(marker);
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error loading shelters:', error);
+            const mapContainer = document.getElementById('map-container');
+            if (mapContainer) {
+                const loadingElement = mapContainer.querySelector('.loading');
+                if (loadingElement) {
+                    loadingElement.innerHTML = '<div class="error">Error loading shelters. Please try again later.</div>';
+                }
+            }
+        });
+}
+
+// Function to load AI suggestions from database
+function loadAISuggestions() {
+    fetch('fetch_ai_suggestions.php')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('AI Suggestions data:', data);
+            aiSuggestionsData = data;
+            const container = document.getElementById('ai-suggestions-container');
+            
+            if (!container) return;
+            
+            if (data.error) {
+                container.innerHTML = `<div class="error">${data.error}</div>`;
+                return;
+            }
+            
+            if (data.length === 0) {
+                container.innerHTML = '<div class="error">No AI suggestions found in the database.</div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            data.forEach(suggestion => {
+                const card = document.createElement('div');
+                card.className = 'ai-suggestion-card';
+                
+                // Get category class for styling
+                const categoryClass = `ai-category category-${suggestion.category ? suggestion.category.toLowerCase() : 'general'}`;
+                
+                card.innerHTML = `
+                    <h3 class="card-title">${suggestion.title}</h3>
+                    <p class="card-content">${suggestion.description}</p>
+                    <div class="${categoryClass}">${suggestion.category || 'General'}</div>
+                    <small>Created: ${new Date(suggestion.created_at).toLocaleDateString()}</small>
+                `;
+                
+                container.appendChild(card);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading AI suggestions:', error);
+            const container = document.getElementById('ai-suggestions-container');
+            if (container) {
+                container.innerHTML = '<div class="error">Error loading AI suggestions. Please check console for details.</div>';
+            }
+        });
+}
+
+// Function to submit shelter form via AJAX
+function submitShelterForm() {
+    const formData = new FormData(document.getElementById('shelter-form'));
+    
+    fetch('shelter_submit.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('shelter-modal').style.display = 'none';
+        showMessage('shelter-message', data, true);
+        // Reload shelters to reflect updated capacity
+        setTimeout(() => {
+            loadShelters();
+        }, 1000);
+    })
+    .catch(error => {
+        showMessage('shelter-message', 'Error submitting shelter registration', false);
+    });
+}
+
+// Chatbot Functions (keep your existing chatbot code here)
+// Chatbot functionality
+function initializeChatbot() {
+    console.log('Initializing chatbot...');
+    
+    const chatbotToggle = document.getElementById('chatbotToggle');
+    const chatbotContainer = document.getElementById('chatbotContainer');
+    const chatbotMinimize = document.getElementById('chatbotMinimize');
+    const chatbotClose = document.getElementById('chatbotClose');
+    const chatbotSend = document.getElementById('chatbotSend');
+    const chatbotInput = document.getElementById('chatbotInput');
+    const chatbotMessages = document.getElementById('chatbotMessages');
+    
+    let isMinimized = false;
+    
+    // Toggle chatbot visibility
+    chatbotToggle.addEventListener('click', function() {
+        chatbotContainer.classList.toggle('chatbot-hidden');
+    });
+    
+    // Minimize chatbot
+    chatbotMinimize.addEventListener('click', function() {
+        if (isMinimized) {
+            chatbotContainer.style.height = '500px';
+            isMinimized = false;
+        } else {
+            chatbotContainer.style.height = '60px';
+            isMinimized = true;
+        }
+    });
+    
+    // Close chatbot
+    chatbotClose.addEventListener('click', function() {
+        chatbotContainer.classList.add('chatbot-hidden');
+    });
+    
+    // Send message on button click
+    chatbotSend.addEventListener('click', sendMessage);
+    
+    // Send message on Enter key
+    chatbotInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+    
+    // Quick action buttons
+    document.querySelectorAll('.quick-action-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const action = this.getAttribute('data-action');
+            handleQuickAction(action);
+        });
+    });
+    
+    function sendMessage() {
+        const message = chatbotInput.value.trim();
+        if (message === '') return;
+        
+        // Add user message
+        addMessage(message, 'user');
+        chatbotInput.value = '';
+        
+        // Show typing indicator
+        showTypingIndicator();
+        
+        // Send message to backend for processing
+        processUserMessage(message);
+    }
+    
+    function processUserMessage(message) {
+        const formData = new FormData();
+        formData.append('user_message', message);
+        formData.append('disasters_data', JSON.stringify(disastersData));
+        formData.append('shelters_data', JSON.stringify(sheltersData));
+        formData.append('resources_data', JSON.stringify(resourcesData));
+        formData.append('ai_suggestions_data', JSON.stringify(aiSuggestionsData));
+        
+        fetch('chatbot_process.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            removeTypingIndicator();
+            
+            if (data.success) {
+                // Add bot response
+                addMessage(data.response, 'bot');
+                
+                // Add quick actions if provided
+                if (data.quick_actions && data.quick_actions.length > 0) {
+                    addQuickActions(data.quick_actions);
+                }
+                
+                // Navigate to relevant section if needed
+                if (data.navigate_to) {
+                    navigateToSection(data.navigate_to);
+                }
+            } else {
+                addMessage("I apologize, but I'm having trouble processing your request. Please try again.", 'bot');
+            }
+        })
+        .catch(error => {
+            console.error('Chatbot error:', error);
+            removeTypingIndicator();
+            addMessage("I'm experiencing technical difficulties. Please try again later.", 'bot');
+        });
+    }
+    
+    function handleQuickAction(action) {
+        let message = '';
+        switch(action) {
+            case 'shelters':
+                message = "Show me available shelters";
+                break;
+            case 'resources':
+                message = "What resources are available?";
+                break;
+            case 'disasters':
+                message = "What disasters are currently active?";
+                break;
+            case 'safety':
+                message = "Give me safety tips";
+                break;
+            default:
+                message = action;
+        }
+        
+        chatbotInput.value = message;
+        sendMessage();
+    }
+    
+    function addMessage(text, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message message-${sender}`;
+        
+        const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        messageDiv.innerHTML = `
+            <div>${text}</div>
+            <div class="message-time">${time}</div>
+        `;
+        
+        chatbotMessages.appendChild(messageDiv);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+    
+    function addQuickActions(actions) {
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'quick-actions';
+        
+        actions.forEach(action => {
+            const btn = document.createElement('button');
+            btn.className = 'quick-action-btn';
+            btn.textContent = action.text;
+            btn.setAttribute('data-action', action.action);
+            btn.addEventListener('click', function() {
+                handleQuickAction(action.action);
+            });
+            actionsDiv.appendChild(btn);
+        });
+        
+        const lastMessage = chatbotMessages.lastChild;
+        if (lastMessage) {
+            lastMessage.appendChild(actionsDiv);
+        }
+        
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+    
+    function showTypingIndicator() {
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'typing-indicator';
+        typingDiv.id = 'typing-indicator';
+        typingDiv.innerHTML = `
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+        `;
+        
+        chatbotMessages.appendChild(typingDiv);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+    
+    function removeTypingIndicator() {
+        const typingIndicator = document.getElementById('typing-indicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+    
+    function navigateToSection(section) {
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+        const sections = document.querySelectorAll('.dashboard-section');
+        
+        sidebarLinks.forEach(link => link.classList.remove('active'));
+        sections.forEach(sectionEl => sectionEl.classList.remove('active'));
+        
+        const targetSection = document.getElementById(section);
+        const targetLink = document.querySelector(`[data-section="${section}"]`);
+        
+        if (targetSection && targetLink) {
+            targetSection.classList.add('active');
+            targetLink.classList.add('active');
+        }
+    }
+}
+</script>
+</body>
+</html>

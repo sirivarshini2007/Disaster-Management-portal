@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Disaster Management Portal</title>
+  <style>
+    /* --- General Body --- */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      background: linear-gradient(135deg, #87CEEB 0%, #E0F7FF 30%, #FFFFFF 70%, #B6E1F8 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* --- Animated Background --- */
+    .background {
+      position: absolute;
+      width: 200vw;
+      height: 200vh;
+      top: -50vh;
+      left: -50vw;
+      pointer-events: none;
+      z-index: 0;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(74, 144, 226, 0.4) 0%, transparent 25%),
+        radial-gradient(circle at 80% 70%, rgba(94, 195, 247, 0.3) 0%, transparent 30%),
+        radial-gradient(circle at 40% 80%, rgba(26, 94, 170, 0.25) 0%, transparent 35%),
+        radial-gradient(circle at 60% 20%, rgba(135, 206, 235, 0.35) 0%, transparent 40%);
+      opacity: 0.6;
+      animation: gradientOrbit 45s ease-in-out infinite;
+    }
+
+    @keyframes gradientOrbit {
+      0%, 100% { 
+        transform: scale(1) rotate(0deg) translateX(0) translateY(0);
+      }
+      25% { 
+        transform: scale(1.05) rotate(90deg) translateX(2%) translateY(3%);
+      }
+      50% { 
+        transform: scale(1.1) rotate(180deg) translateX(-1%) translateY(4%);
+      }
+      75% { 
+        transform: scale(1.05) rotate(270deg) translateX(-3%) translateY(-2%);
+      }
+    }
+
+    /* Floating particles */
+    .background::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle at 25% 25%, rgba(255,255,255,0.8) 2px, transparent 3px),
+        radial-gradient(circle at 75% 15%, rgba(255,255,255,0.6) 1px, transparent 2px),
+        radial-gradient(circle at 15% 65%, rgba(255,255,255,0.7) 1.5px, transparent 2.5px),
+        radial-gradient(circle at 85% 45%, rgba(255,255,255,0.5) 1px, transparent 2px),
+        radial-gradient(circle at 50% 85%, rgba(255,255,255,0.9) 2px, transparent 3px);
+      background-size: 200px 200px, 150px 150px, 180px 180px, 220px 220px, 170px 170px;
+      animation: floatParticles 30s linear infinite;
+    }
+
+    @keyframes floatParticles {
+      0% { transform: translateY(0) translateX(0); }
+      25% { transform: translateY(-10px) translateX(5px); }
+      50% { transform: translateY(-5px) translateX(10px); }
+      75% { transform: translateY(-15px) translateX(-5px); }
+      100% { transform: translateY(0) translateX(0); }
+    }
+
+    /* --- Container --- */
+    .container {
+      position: relative;
+      z-index: 2;
+      min-width: 350px;
+      text-align: center;
+      padding: 0 2vw;
+      width: 100%;
+      animation: containerEntrance 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    @keyframes containerEntrance {
+      0% { 
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+      }
+      100% { 
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    h1 {
+      font-size: 3.2em;
+      margin-bottom: 50px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      color: #0b3d91;
+      text-shadow: 0 6px 30px rgba(0,100,200,0.3);
+      background: linear-gradient(135deg, #1E90FF 0%, #00BFFF 25%, #87CEEB 50%, #1E90FF 75%, #00BFFF 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-size: 200% auto;
+      animation: shimmer 4s linear infinite;
+      position: relative;
+    }
+
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, #1E90FF, transparent);
+      border-radius: 2px;
+      animation: pulseLine 2s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
+    @keyframes pulseLine {
+      0%, 100% { opacity: 0.5; width: 80px; }
+      50% { opacity: 1; width: 120px; }
+    }
+
+    /* --- Cards --- */
+    .cards {
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 60px;
+      perspective: 1000px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 24px;
+      padding: 35px 25px;
+      width: 240px;
+      box-shadow: 
+        0 15px 50px rgba(30, 144, 255, 0.15),
+        0 5px 20px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(15px);
+      border: 1.5px solid rgba(255, 255, 255, 0.4);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transition: left 0.8s;
+    }
+
+    .card:hover::before {
+      left: 100%;
+    }
+
+    .card:hover {
+      transform: scale(1.08) translateY(-12px) rotateX(5deg);
+      box-shadow: 
+        0 25px 60px rgba(30, 144, 255, 0.3),
+        0 15px 30px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      border-color: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .card img {
+      width: 85px;
+      height: 85px;
+      margin-bottom: 20px;
+      border-radius: 20px;
+      box-shadow: 
+        0 8px 25px rgba(30, 140, 200, 0.2),
+        0 2px 5px rgba(0, 0, 0, 0.05);
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.1));
+      background: linear-gradient(135deg, #E0F7FF 0%, #B6E1F8 100%);
+      padding: 8px;
+    }
+
+    .card:hover img {
+      transform: scale(1.15) rotate(8deg);
+      box-shadow: 
+        0 15px 35px rgba(30, 140, 200, 0.3),
+        0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .card h2 {
+      color: #0A2E5C;
+      font-size: 1.4em;
+      font-weight: 700;
+      margin: 8px 0 0 0;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover h2 {
+      color: #1E90FF;
+      text-shadow: 0 2px 10px rgba(30, 144, 255, 0.3);
+    }
+
+    /* --- Forms --- */
+    .form-box {
+      display: none;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(20px);
+      padding: 45px 40px;
+      border-radius: 24px;
+      box-shadow: 
+        0 20px 60px rgba(30, 144, 255, 0.2),
+        0 8px 30px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
+      text-align: left;
+      animation: formSlideIn 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #1E90FF, #00BFFF, #87CEEB, #1E90FF);
+      background-size: 300% 100%;
+      animation: gradientShift 3s ease infinite;
+    }
+
+    @keyframes formSlideIn {
+      from { 
+        opacity: 0; 
+        transform: scale(0.96) translateY(50px) rotateX(-10deg);
+      }
+      to { 
+        opacity: 1; 
+        transform: scale(1) translateY(0) rotateX(0);
+      }
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .form-box h2 {
+      margin-bottom: 30px;
+      color: #0A2E5C;
+      font-size: 1.8em;
+      text-align: center;
+      background: linear-gradient(135deg, #1E90FF 0%, #00BFFF 50%, #87CEEB 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+      padding-bottom: 15px;
+    }
+
+    .form-box h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, #1E90FF, #00BFFF);
+      border-radius: 2px;
+    }
+
+    input {
+      width: 100%;
+      padding: 16px 18px;
+      margin: 12px 0;
+      border: 2px solid #E6F3FF;
+      border-radius: 12px;
+      font-size: 1em;
+      background: rgba(255,255,255,0.9);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      outline: none;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+      position: relative;
+    }
+
+    input:focus {
+      border-color: #1E90FF;
+      background: #F8FDFF;
+      box-shadow: 
+        0 5px 20px rgba(30, 144, 255, 0.2),
+        0 2px 5px rgba(0, 0, 0, 0.05);
+      transform: translateY(-2px);
+    }
+
+    input::placeholder {
+      color: #A0C8F0;
+      transition: all 0.3s ease;
+    }
+
+    input:focus::placeholder {
+      color: #7BB8F0;
+      transform: translateX(5px);
+    }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1E90FF 0%, #00BFFF 100%);
+      color: white;
+      font-size: 1.1em;
+      font-weight: 600;
+      margin-top: 15px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      outline: none;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(30, 144, 255, 0.3);
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.6s;
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #1C86EE 0%, #009ACD 100%);
+      transform: scale(1.05) translateY(-3px);
+      box-shadow: 0 12px 35px rgba(30, 144, 255, 0.4);
+    }
+
+    button:active {
+      transform: scale(1) translateY(0);
+      box-shadow: 0 5px 20px rgba(30, 144, 255, 0.3);
+    }
+
+    .toggle-link {
+      color: #1E90FF;
+      cursor: pointer;
+      font-size: 15px;
+      display: block;
+      margin-top: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+      font-weight: 500;
+    }
+
+    .toggle-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 50%;
+      width: 0;
+      height: 1px;
+      background: #1E90FF;
+      transition: all 0.3s ease;
+      transform: translateX(-50%);
+    }
+
+    .toggle-link:hover {
+      color: #0A2E5C;
+    }
+
+    .toggle-link:hover::after {
+      width: 100%;
+    }
+
+    /* --- Validation Error --- */
+    .error-msg {
+      color: #FF6B6B;
+      font-size: 0.95em;
+      margin-top: 10px;
+      text-align: center;
+      padding: 10px;
+      background: rgba(255, 107, 107, 0.1);
+      border-radius: 8px;
+      border-left: 3px solid #FF6B6B;
+      animation: errorPulse 0.5s ease;
+    }
+
+    @keyframes errorPulse {
+      0% { transform: scale(0.95); opacity: 0; }
+      70% { transform: scale(1.02); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* --- Loading Spinner --- */
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 15px 0;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .spinner {
+      border: 3px solid rgba(30, 144, 255, 0.2);
+      border-top: 3px solid #1E90FF;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+      box-shadow: 0 0 10px rgba(30, 144, 255, 0.3);
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .cards {
+        gap: 25px;
+      }
+      
+      .card {
+        width: 200px;
+        padding: 25px 20px;
+      }
+      
+      .form-box {
+        padding: 35px 25px;
+        margin: 0 20px;
+      }
+      
+      h1 {
+        font-size: 2.5em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="background"></div>
+  <div class="container">
+    <h1>Disaster Management System</h1>
+
+    <!-- Options Cards -->
+    <div class="cards">
+      <div class="card" onclick="showForm('admin')">
+        <img src="https://cdn-icons-png.flaticon.com/512/3068/3068331.png" alt="Admin">
+        <h2>Admin</h2>
+      </div>
+      <div class="card" onclick="showForm('volunteer')">
+        <img src="https://cdn-icons-png.flaticon.com/512/3063/3063820.png" alt="Volunteer">
+        <h2>Volunteer</h2>
+      </div>
+      <div class="card" onclick="showForm('public')">
+        <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Public">
+        <h2>Public</h2>
+      </div>
+    </div>
+
+    <!-- Admin Form -->
+    <div id="adminForm" class="form-box">
+      <h2>Admin Login</h2>
+      <form id="adminLogin">
+        <input type="text" id="admin_id" name="admin_id" placeholder="Admin ID" required>
+        <input type="password" id="admin_pass" name="admin_pass" placeholder="Password" required>
+        <button type="submit">Login</button>
+        <div class="loading" id="adminLoading">
+          <div class="spinner"></div>
+          <p>Logging in...</p>
+        </div>
+      </form>
+      <div id="adminError" class="error-msg"></div>
+    </div>
+
+    <!-- Volunteer Form -->
+    <div id="volunteerForm" class="form-box">
+      <h2 id="volTitle">Volunteer Login</h2>
+      <form id="volForm" action="vollogin.php" method="post">
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+      <span class="toggle-link" onclick="toggleVolunteer()">Don't have an account? Sign Up</span>
+    </div>
+
+    <!-- Public Form -->
+    <div id="publicForm" class="form-box">
+      <h2 id="pubTitle">Public Login</h2>
+      <form id="pubForm" action="publogin.php" method="post">
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+      <span class="toggle-link" onclick="togglePublic()">New here? Sign Up</span>
+    </div>
+
+  </div>
+
+  <script>
+    // Show Form
+    function showForm(type) {
+      document.getElementById('adminForm').style.display = 'none';
+      document.getElementById('volunteerForm').style.display = 'none';
+      document.getElementById('publicForm').style.display = 'none';
+      document.getElementById(type + 'Form').style.display = 'block';
+      
+      // Clear previous errors
+      document.getElementById('adminError').textContent = '';
+    }
+
+    // Volunteer Toggle
+    function toggleVolunteer() {
+      let form = document.getElementById('volForm');
+      let title = document.getElementById('volTitle');
+      if (title.innerText === "Volunteer Login") {
+        title.innerText = "Volunteer Sign Up";
+        form.action = "volsignup.php";
+        form.innerHTML = `
+          <input type="text" name="name" placeholder="Full Name" required>
+          <input type="email" name="email" placeholder="Email" required>
+          <input type="password" name="password" placeholder="Password" required>
+          <input type="text" name="skills" placeholder="Skills/Expertise" required>
+          <button type="submit">Sign Up</button>
+        `;
+      } else {
+        title.innerText = "Volunteer Login";
+        form.action = "vollogin.php";
+        form.innerHTML = `
+          <input type="email" name="email" placeholder="Email" required>
+          <input type="password" name="password" placeholder="Password" required>
+          <button type="submit">Login</button>
+        `;
+      }
+    }
+
+    // Public Toggle
+    function togglePublic() {
+      let form = document.getElementById('pubForm');
+      let title = document.getElementById('pubTitle');
+      if (title.innerText === "Public Login") {
+        title.innerText = "Public Sign Up";
+        form.action = "pubsign.php";
+        form.innerHTML = `
+          <input type="text" name="name" placeholder="Full Name" required>
+          <input type="email" name="email" placeholder="Email" required>
+          <input type="password" name="password" placeholder="Password" required>
+          <input type="text" name="location" placeholder="Location" required>
+          <button type="submit">Sign Up</button>
+        `;
+      } else {
+        title.innerText = "Public Login";
+        form.action = "publogin.php";
+        form.innerHTML = `
+          <input type="email" name="email" placeholder="Email" required>
+          <input type="password" name="password" placeholder="Password" required>
+          <button type="submit">Login</button>
+        `;
+      }
+    }
+
+    // Admin Login Handler
+    document.getElementById('adminLogin').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const adminId = document.getElementById('admin_id').value;
+      const adminPass = document.getElementById('admin_pass').value;
+      const errorDiv = document.getElementById('adminError');
+      const loadingDiv = document.getElementById('adminLoading');
+      const submitBtn = this.querySelector('button[type="submit"]');
+      
+      // Clear previous errors
+      errorDiv.textContent = '';
+      
+      // Show loading
+      submitBtn.style.display = 'none';
+      loadingDiv.style.display = 'block';
+      
+      // Simulate authentication (replace with your actual validation logic)
+      setTimeout(() => {
+        // Define valid credentials (you can change these)
+        const validAdmins = [
+          { id: 'admin123', password: 'securePass' }
+        ];
+        
+        // Check if credentials are valid
+        const isValid = validAdmins.some(admin => 
+          admin.id === adminId && admin.password === adminPass
+        );
+        
+        if (isValid) {
+          // Successful login - redirect to test3.html
+          window.location.href = 'testd.html';
+        } else {
+          // Invalid credentials
+          errorDiv.textContent = 'Invalid Admin ID or Password';
+          submitBtn.style.display = 'block';
+          loadingDiv.style.display = 'none';
+        }
+      }, 1500); // Simulate network delay
+    });
+
+    // Check for URL parameters on page load to show admin form with error
+    window.addEventListener('load', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const error = urlParams.get('error');
+      
+      if (error) {
+        document.getElementById('adminError').textContent = decodeURIComponent(error);
+        showForm('admin');
+      }
+    });
+  </script>
+</body>
+</html>

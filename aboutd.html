@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Us - Disaster Management</title>
+<style>
+/* Global Styles */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to bottom, #e0f7ff, #ffffff);
+    color: #333;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+h1, h2 {
+    text-align: center;
+    color: #1e3a8a;
+    margin-bottom: 20px;
+}
+
+p.description {
+    text-align: center;
+    font-size: 16px;
+    color: #555;
+    line-height: 1.6;
+    max-width: 800px;
+    margin: 0 auto 40px auto;
+}
+
+/* About Features Section */
+.features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.feature-box {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    width: 280px;
+    margin: 10px;
+    text-align: center;
+    box-shadow: 0px 8px 20px rgba(0,0,0,0.05);
+    transition: all 0.3s;
+    animation: fadeIn 1s;
+}
+
+.feature-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 12px 25px rgba(0,0,0,0.1);
+}
+
+.feature-box h3 {
+    color: #1e3a8a;
+    margin-bottom: 10px;
+}
+
+.feature-box p {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {opacity:0; transform: translateY(20px);}
+    to {opacity:1; transform: translateY(0);}
+}
+
+/* Responsive */
+@media(max-width: 768px){
+    .features {
+        flex-direction: column;
+        align-items: center;
+    }
+    .feature-box {
+        width: 90%;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>About Us</h1>
+    <p class="description">
+        The Disaster Prediction and Relief Coordination Database is conceived as a highly scalable and intelligent relational database management system (RDBMS) 
+        aimed at transforming disaster management. By integrating comprehensive data storage, advanced predictive analytics, and real-time coordination mechanisms, 
+        the system establishes a unified and resilient digital framework for managing crises.
+    </p>
+
+    <h2>Our Vision & Mission</h2>
+    <p class="description">
+        Our mission is to enhance disaster preparedness, optimize relief operations, and empower communities through advanced data analytics, geospatial visualization, 
+        and real-time coordination.
+    </p>
+
+    <h2>Key Features</h2>
+    <div class="features">
+        <div class="feature-box">
+            <h3>Predictive Analytics</h3>
+            <p>Leverages machine learning models to forecast potential disasters early, enabling proactive planning and timely response.</p>
+        </div>
+        <div class="feature-box">
+            <h3>Geospatial Visualization</h3>
+            <p>Maps high-risk areas, shelters, and resource centers using interactive mapping APIs for quick and informed decision-making.</p>
+        </div>
+        <div class="feature-box">
+            <h3>Real-Time Coordination</h3>
+            <p>Automated triggers and alerts enable administrators and volunteers to coordinate relief efforts efficiently during emergencies.</p>
+        </div>
+        <div class="feature-box">
+            <h3>Role-Based Access</h3>
+            <p>Admins manage resources and operations while users access critical information regarding shelters, resources, and safety measures.</p>
+        </div>
+        <div class="feature-box">
+            <h3>Optimized Resource Allocation</h3>
+            <p>Ensures live inventory updates and demand forecasting for effective distribution of relief materials and services.</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NGO Dashboard - Disaster Management</title>
+  <style>
+    /* Add your NGO dashboard styles here */
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+    }
+    
+    .dashboard-header {
+      background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .dashboard-content {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    .dashboard-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-header">
+    <h1>NGO Organization Dashboard</h1>
+    <div class="user-info">
+      <span>Welcome, Organization Name</span>
+      <button>Logout</button>
+    </div>
+  </div>
+  
+  <div class="dashboard-content">
+    <div class="dashboard-card">
+      <h3>Resource Management</h3>
+      <p>Manage and track all donated resources</p>
+    </div>
+    
+    <div class="dashboard-card">
+      <h3>Volunteer Coordination</h3>
+      <p>Coordinate with volunteers and assign tasks</p>
+    </div>
+    
+    <div class="dashboard-card">
+      <h3>Emergency Requests</h3>
+      <p>Manage emergency resource requests</p>
+    </div>
+    
+    <div class="dashboard-card">
+      <h3>Reports & Analytics</h3>
+      <p>Generate reports and view analytics</p>
+    </div>
+  </div>
+</body>
+</html>
